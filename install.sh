@@ -302,6 +302,20 @@ server {
   listen 80;
   server_name _;
 
+  # Default index — fake OSS error
+  location = / {
+    default_type application/xml;
+    return 404 '<?xml version="1.0" encoding="UTF-8"?>\n<Error>\n  <Code>NoSuchKey</Code>\n  <Message>The specified key does not exist.</Message>\n  <RequestId>69870680B0CAA23639B92A8C</RequestId>\n  <HostId>surrit.oss-eu-central-1.aliyuncs.com</HostId>\n  <Key>/</Key>\n  <EC>0026-00000001</EC>\n  <RecommendDoc>https://api.alibabacloud.com/troubleshoot?q=0026-00000001</RecommendDoc>\n</Error>';
+  }
+
+  # Custom 404 — fake OSS error
+  error_page 404 /custom_404;
+  location = /custom_404 {
+    internal;
+    default_type application/xml;
+    return 404 '<?xml version="1.0" encoding="UTF-8"?>\n<Error>\n  <Code>NoSuchKey</Code>\n  <Message>The specified key does not exist.</Message>\n  <RequestId>69870680B0CAA23639B92A8C</RequestId>\n  <HostId>surrit.oss-eu-central-1.aliyuncs.com</HostId>\n  <Key>$request_uri</Key>\n  <EC>0026-00000001</EC>\n  <RecommendDoc>https://api.alibabacloud.com/troubleshoot?q=0026-00000001</RecommendDoc>\n</Error>';
+  }
+
   # Static files from /home/files
   location /static/ {
     alias /home/files/;
